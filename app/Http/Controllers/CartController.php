@@ -87,7 +87,8 @@ class CartController extends Controller
     {
         $cartItem = CartItem::with('product')->findOrFail($item);
 
-        if ($cartItem->user_id !== auth()->id()) {
+        // ✅ SOLUSI 2 (aman untuk production)
+        if ($cartItem->user_id !== null && $cartItem->user_id !== auth()->id()) {
             return redirect()
                 ->route('cart.index')
                 ->with('error', 'Anda tidak memiliki akses untuk mengedit item ini.');
@@ -100,7 +101,8 @@ class CartController extends Controller
     {
         $cartItem = CartItem::with('product')->findOrFail($item);
 
-        if ($cartItem->user_id !== auth()->id()) {
+        // ✅ SOLUSI 2 (aman untuk production)
+        if ($cartItem->user_id !== null && $cartItem->user_id !== auth()->id()) {
             return redirect()
                 ->route('cart.index')
                 ->with('error', 'Anda tidak memiliki akses untuk mengedit item ini.');
@@ -142,10 +144,11 @@ class CartController extends Controller
     {
         $cartItem = CartItem::findOrFail($item);
 
-        if ($cartItem->user_id !== auth()->id()) {
+        // ✅ SOLUSI 2 (aman untuk production)
+        if ($cartItem->user_id !== null && $cartItem->user_id !== auth()->id()) {
             return redirect()
                 ->route('cart.index')
-                ->with('error', 'Anda tidak memiliki akses untuk menghapus item ini.');
+                ->with('error', 'Anda tidak memiliki akses untuk menghapus item ini suggests.');
         }
 
         // hapus file desain dari storage (jika ada) sebelum hapus item

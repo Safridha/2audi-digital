@@ -1,63 +1,98 @@
 <header class="bg-indigo-500 shadow-sm py-3">
     <div class="max-w-7xl mx-auto flex items-center justify-between px-6">
 
-        <!-- LOGO -->
+        {{-- LOGO --}}
         <div class="flex items-center">
-            <img src="{{ asset('images/logo.jpg') }}" alt="2 Audi Digital" class="h-20">
+            <img src="{{ asset('images/logo.png') }}" alt="2 Audi Digital" class="h-20">
         </div>
 
-        <!-- SEARCH BAR -->
+        {{-- SEARCH BAR --}}
         <div class="flex-grow mx-6">
-            <div class="relative">
-                <input type="text" placeholder="Mau Cari Apa?" 
-                       class="w-full h-11 pl-8 pr-10 rounded-full border-none focus:outline-none">
-                <i class="bi bi-search absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 text-lg"></i>
-            </div>
+            <form action="{{ route('catalog.search') }}" method="GET" class="relative">
+                <input
+                    type="text"
+                    name="q"
+                    placeholder="Mau Cari Apa?"
+                    value="{{ request('q') }}"
+                    class="w-full h-11 rounded-full bg-white pl-4 pr-11
+                           text-gray-800 placeholder-gray-400
+                           border-none focus:outline-none"
+                >
+                <button type="submit"
+                        class="absolute right-3 top-1/2 -translate-y-1/2 
+                               bg-transparent border-0 p-0">
+                    <i class="bi bi-search text-gray-500 text-lg"></i>
+                </button>
+            </form>
         </div>
 
-        <!-- MENU -->
+        {{-- MENU KANAN --}}
         <div class="flex items-center space-x-6 text-white font-bold">
 
-            <!-- KATEGORI PRODUK -->
-            <div class="relative" x-data="{ open: false }">
-                <button @click="open = !open" class="text-white text-sm md:text-base hover:underline">
-                    KATEGORI PRODUK
-                </button>
-                <div x-show="open" @click.away="open = false" x-transition
-                     class="absolute right-0 mt-2 w-48 bg-white text-gray-800 rounded shadow-lg z-50">
-                    <a href="#" class="block px-4 py-2 hover:bg-gray-100">Kategori 1</a>
-                    <a href="#" class="block px-4 py-2 hover:bg-gray-100">Kategori 2</a>
-                    <a href="#" class="block px-4 py-2 hover:bg-gray-100">Kategori 3</a>
-                </div>
-            </div>
+            {{-- KERANJANG --}}
+            @php
+                $cartItemCount = auth()->check()
+                    ? \App\Models\CartItem::where('user_id', auth()->id())->count()
+                    : 0;
+            @endphp
 
-            <!-- KERANJANG -->
             <div class="relative">
-                <a href="#" class="text-white text-2xl">
+                <button type="button"
+                        @click="openCart = true"
+                        class="text-white text-2xl"
+                        data-bs-toggle="tooltip"
+                        data-bs-placement="bottom"
+                        title="Keranjang">
                     <i class="bi bi-cart3"></i>
-                </a>
-                @if(session('cartCount', 0) > 0)
+                </button>
+
+                @if($cartItemCount > 0)
                     <span class="absolute -top-1 -right-2 bg-red-600 text-white text-xs rounded-full px-2">
-                        {{ session('cartCount') }}
+                        {{ $cartItemCount }}
                     </span>
                 @endif
             </div>
 
-            <!-- AKUN -->
+            {{-- RIWAYAT PESANAN --}}
+            <div>
+                @auth
+                    <a href="{{ route('orders.history') }}"
+                       class="text-white text-2xl"
+                       title="Riwayat Pesanan"
+                       data-bs-toggle="tooltip"
+                       data-bs-placement="bottom">
+                        <i class="bi bi-clock-history"></i>
+                    </a>
+                @else
+                    <a href="{{ route('login') }}"
+                       class="text-white text-2xl"
+                       title="Riwayat Pesanan"
+                       data-bs-toggle="tooltip"
+                       data-bs-placement="bottom">
+                        <i class="bi bi-clock-history"></i>
+                    </a>
+                @endauth
+            </div>
+
+            {{-- AKUN --}}
             <div class="relative" x-data="{ open: false }">
-                <button @click="open = !open" class="text-white text-4xl">
+                <button @click="open = !open"
+                        class="text-white text-4xl"
+                        data-bs-toggle="tooltip"
+                        data-bs-placement="bottom"
+                        title="Akun">
                     <i class="bi bi-person-circle"></i>
                 </button>
 
                 <div x-show="open" @click.away="open = false" x-transition
                      class="absolute right-0 mt-3 w-48 bg-white text-gray-800 rounded-lg shadow-lg py-2 z-50">
-                    
+
                     @auth
                         <span class="block px-4 py-2">Halo, {{ Auth::user()->name }}</span>
-                        
-                        <a href="{{ route('profile.edit') }}" 
+
+                        <a href="{{ route('profile.edit') }}"
                            class="block px-4 py-2 hover:bg-gray-100">
-                           <i class="bi bi-pencil-square mr-2"></i> Kelola Profil
+                            <i class="bi bi-pencil-square mr-2"></i> Kelola Profil
                         </a>
 
                         <form method="POST" action="{{ route('logout') }}">
@@ -66,10 +101,12 @@
                                 <i class="bi bi-box-arrow-right mr-2"></i> Logout
                             </button>
                         </form>
+
                     @else
                         <a href="{{ route('login') }}" class="block px-4 py-2 hover:bg-gray-100">
                             <i class="bi bi-box-arrow-in-right mr-2"></i> Login
                         </a>
+
                         <a href="{{ route('register') }}" class="block px-4 py-2 hover:bg-gray-100">
                             <i class="bi bi-person-plus mr-2"></i> Register
                         </a>

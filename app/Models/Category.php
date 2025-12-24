@@ -3,9 +3,21 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Category extends Model
 {
-    protected $fillable = ['image', 'name', 'price'];
-}
+    use HasFactory;
 
+    protected $fillable = [
+        'image',
+        'name',
+        'description',
+    ];
+
+    // Relasi: Satu kategori punya banyak produk
+    public function products()
+    {
+        return $this->hasMany(Product::class);
+    }
+}

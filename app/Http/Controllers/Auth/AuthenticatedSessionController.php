@@ -9,27 +9,23 @@ use Illuminate\Support\Facades\Auth;
 class AuthenticatedSessionController extends Controller
 {
     /**
-     * 🔹 Tampilkan form login.
-     * Halaman login bisa dibuka kapan saja, meskipun user sudah login.
+     * Tampilkan form login.
      */
     public function create()
     {
-        // Logout user lama supaya bisa login ulang
+        // Jika sudah login, arahkan langsung sesuai role
         if (Auth::check()) {
-            Auth::logout();
-            request()->session()->invalidate();
-            request()->session()->regenerateToken();
+            return $this->redirectToRole();
         }
 
         return view('auth.login');
     }
 
     /**
-     * 🔹 Proses login.
+     * Proses login.
      */
     public function store(Request $request)
     {
-        // Validasi input login
         $credentials = $request->validate([
             'email' => ['required', 'string', 'email'],
             'password' => ['required', 'string'],
@@ -45,27 +41,24 @@ class AuthenticatedSessionController extends Controller
         // Regenerasi session agar aman
         $request->session()->regenerate();
 
-        // Redirect sesuai role
+        // Redirect sesuai role user
         return $this->redirectToRole();
     }
 
     /**
-     * 🔹 Logout user.
+     * Logout user.
      */
     public function destroy(Request $request)
     {
         Auth::logout();
-
-        // Hapus session dan token
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        // Redirect ke halaman utama
-        return redirect('/');
+        return redirect()->route('home');
     }
 
     /**
-     * 🔹 Fungsi bantu redirect sesuai role.
+     * 🔹 Arahkan user sesuai role-nya.
      */
     private function redirectToRole()
     {
@@ -74,8 +67,6 @@ class AuthenticatedSessionController extends Controller
         if ($user->role === 'admin') {
             return redirect()->route('admin.dashboard');
         }
-
-        // Default: user biasa → home
         return redirect()->route('home');
     }
 }

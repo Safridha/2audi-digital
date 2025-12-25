@@ -183,7 +183,7 @@ document.addEventListener('DOMContentLoaded', function () {
             $steps = [
                 'Pilih kategori produk.',
                 'Pilih produk sesuai kebutuhan.',
-                'Atur ukuran/bahan/spesifikasi.',
+                'Atur ukuran/spesifikasi.',
                 'Upload desain.',
                 'Checkout pesanan.',
                 'Bayar & pesanan diproses.',

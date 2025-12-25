@@ -1,20 +1,31 @@
 <header class="shadow-sm" style="background:#4f46e5">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 py-3">
-    <div class="flex flex-wrap items-center gap-3">
+    <div class="flex items-center gap-3">
 
-      {{-- LOGO (baris atas) --}}
-      <a href="{{ url('/') }}" class="shrink-0 order-1">
-        <img src="{{ asset('images/logo.png') }}" alt="2 Audi Digital" class="h-10 sm:h-16">
+      {{-- LOGO --}}
+      <a href="{{ url('/') }}" class="shrink-0">
+        <img src="{{ asset('images/logo.png') }}" alt="2 Audi Digital" class="h-14 sm:h-16">
       </a>
 
-      {{-- RIGHT MENU (baris atas, rata kanan) --}}
+      {{-- SEARCH --}}
+      <div class="flex-1 flex justify-center">
+        <form action="{{ route('catalog.search') }}" method="GET" class="relative w-full max-w-2xl">
+          <input name="q" value="{{ request('q') }}" placeholder="Mau cari apa?"
+                 class="w-full h-10 sm:h-11 rounded-full bg-white pl-4 pr-11 text-gray-800 placeholder-gray-400 border-0 focus:outline-none">
+          <button class="absolute right-3 top-1/2 -translate-y-1/2 bg-transparent border-0 p-0" type="submit">
+            <i class="bi bi-search text-gray-500 text-lg"></i>
+          </button>
+        </form>
+      </div>
+
+      {{-- RIGHT MENU --}}
       @php
         $cartItemCount = auth()->check()
           ? \App\Models\CartItem::where('user_id', auth()->id())->count()
           : 0;
       @endphp
 
-      <div class="flex items-center gap-4 sm:gap-7 text-white font-bold order-2 ml-auto">
+      <div class="flex items-center gap-5 sm:gap-7 text-white font-bold">
 
         {{-- CART --}}
         <div class="relative">
@@ -25,15 +36,12 @@
                   data-bs-placement="bottom" title="Keranjang">
             <i class="bi bi-cart3"></i>
           </button>
-
           @if($cartItemCount > 0)
-            <span class="absolute -top-1 -right-2 bg-red-600 text-white text-xs rounded-full px-2">
-              {{ $cartItemCount }}
-            </span>
+            <span class="absolute -top-1 -right-2 bg-red-600 text-white text-xs rounded-full px-2">{{ $cartItemCount }}</span>
           @endif
         </div>
 
-        {{-- RIWAYAT (di HP disembunyiin biar ga sempit) --}}
+        {{-- RIWAYAT --}}
         <div class="hidden sm:block">
           <a href="{{ auth()->check() ? route('orders.history') : route('login') }}"
              x-init="$el._tt = new bootstrap.Tooltip($el)"
@@ -79,19 +87,6 @@
         </div>
 
       </div>
-
-      {{-- SEARCH (turun ke baris bawah saat HP) --}}
-      <div class="order-3 w-full sm:order-2 sm:flex-1 sm:flex sm:justify-center">
-        <form action="{{ route('catalog.search') }}" method="GET"
-              class="relative w-full sm:max-w-2xl">
-          <input name="q" value="{{ request('q') }}" placeholder="Mau cari apa?"
-                 class="w-full h-10 sm:h-11 rounded-full bg-white pl-4 pr-11 text-gray-800 placeholder-gray-400 border-0 focus:outline-none">
-          <button class="absolute right-3 top-1/2 -translate-y-1/2 bg-transparent border-0 p-0" type="submit">
-            <i class="bi bi-search text-gray-500 text-lg"></i>
-          </button>
-        </form>
-      </div>
-
     </div>
   </div>
 </header>

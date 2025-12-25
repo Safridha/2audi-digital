@@ -20,116 +20,129 @@
     <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
 
     <style>
-        body { background-color: #f8f8f8; }
-        header { background-color: #1e3a8a; color: white; }
-        footer { background-color: #1e40af; color: white; padding: 2rem 0; }
+        :root{
+            --brand: #4f46e5;      /* indigo */
+            --brandDark: #1e3a8a;  /* navy */
+            --surface: #ffffff;
+            --muted: #f5f7fb;      /* abu muda */
+            --text: #0f172a;
+        }
 
-        .whatsapp-bubble {
+        body { background: var(--muted); color: var(--text); }
+
+        /* Section rhythm (biar ga kebanyakan biru) */
+        .section-surface { background: var(--surface); }
+        .section-muted   { background: var(--muted); }
+
+        /* Card look */
+        .card-soft{
+            background: #fff;
+            border: 1px solid rgba(15, 23, 42, .06);
+            border-radius: 14px;
+            box-shadow: 0 6px 18px rgba(15, 23, 42, .06);
+        }
+
+        /* Buttons */
+        .btn-brand{
+            background: var(--brand);
+            color: #fff;
+            border: none;
+            border-radius: 999px;
+            padding: 10px 16px;
+            font-weight: 700;
+        }
+        .btn-brand:hover{ filter: brightness(.95); color:#fff; }
+        .btn-ghost{
+            background: #fff;
+            color: var(--brand);
+            border: 1px solid rgba(79,70,229,.25);
+            border-radius: 999px;
+            padding: 10px 16px;
+            font-weight: 700;
+        }
+
+        /* WhatsApp floating */
+        .wa-float-wrapper {
             position: fixed;
-            bottom: 20px;
-            right: 20px;
-            width: 60px;
-            height: 60px;
+            right: 18px;
+            bottom: 18px;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 8px;
+        }
+        .wa-label {
+            background: #25D366;
+            color: #fff;
+            font-size: 12px;
+            padding: 6px 10px;
+            border-radius: 999px;
+            font-weight: 700;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.18);
+            white-space: nowrap;
+        }
+        .whatsapp-bubble {
+            width: 58px; height: 58px;
             background-color: #25D366;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            box-shadow: 0 10px 22px rgba(0,0,0,0.22);
             cursor: pointer;
             transition: transform 0.2s;
-            z-index: 50;
         }
-        .whatsapp-bubble:hover { transform: scale(1.1); }
+        .whatsapp-bubble:hover { transform: scale(1.06); }
         .whatsapp-bubble i { color: white; font-size: 28px; }
 
-        /* WA LABEL + PANAH */
-        .wa-float-wrapper {
-            position: fixed;
-            bottom: 110px;
-            right: 20px;
-            z-index: 9999;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 4px;
+        /* Hide label on small screens (biar ga nutup konten) */
+        @media (max-width: 576px){
+            .wa-label{ display:none; }
+            .wa-float-wrapper{ right: 14px; bottom: 14px; }
         }
 
-        .wa-label {
-            position: relative;
-            background-color: #25D366;
-            color: #fff;
-            font-size: 12px;
-            padding: 6px 12px;
-            border-radius: 12px;
-            font-weight: 600;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.18);
-            white-space: nowrap;
-            line-height: 1;
-        }
-
-        .wa-label::after {
-            content: "";
-            position: absolute;
-            bottom: -6px;
-            left: 50%;
-            transform: translateX(-50%);
-            border-width: 6px 6px 0 6px;
-            border-style: solid;
-            border-color: #25D366 transparent transparent transparent;
-        }
-
+        /* Tooltip bootstrap */
         .tooltip-inner {
-            background-color: #1e3a8a; 
+            background-color: var(--brandDark);
             color: #ffffff;
             font-size: 0.75rem;
             padding: 6px 10px;
-            border-radius: 8px;
+            border-radius: 10px;
             box-shadow: 0 6px 16px rgba(0,0,0,0.18);
         }
-
-        /* Panah tooltip */
-        .tooltip.bs-tooltip-top .tooltip-arrow::before { border-top-color: #1e3a8a; }
-        .tooltip.bs-tooltip-bottom .tooltip-arrow::before { border-bottom-color: #1e3a8a; }
-        .tooltip.bs-tooltip-start .tooltip-arrow::before { border-left-color: #1e3a8a; }
-        .tooltip.bs-tooltip-end .tooltip-arrow::before { border-right-color: #1e3a8a; }
+        .tooltip.bs-tooltip-top .tooltip-arrow::before { border-top-color: var(--brandDark); }
+        .tooltip.bs-tooltip-bottom .tooltip-arrow::before { border-bottom-color: var(--brandDark); }
+        .tooltip.bs-tooltip-start .tooltip-arrow::before { border-left-color: var(--brandDark); }
+        .tooltip.bs-tooltip-end .tooltip-arrow::before { border-right-color: var(--brandDark); }
     </style>
 </head>
 
 <body class="font-sans min-h-screen flex flex-col" x-data="{ openCart: false }">
 
-    {{-- CART COUNT UNTUK BADGE (JUMLAH ITEM/BARIS, BUKAN TOTAL QTY) --}}
-    @php
-        $cartCount = auth()->check()
-            ? \App\Models\CartItem::where('user_id', auth()->id())->count()
-            : 0;
-    @endphp
-
     {{-- HEADER --}}
     @include('layouts.header')
 
     {{-- MAIN CONTENT --}}
-    <main class="mt-4 flex-grow">
+    <main class="flex-grow">
         @yield('content')
     </main>
 
     {{-- FOOTER --}}
     @include('layouts.footer')
 
-    <!-- WhatsApp Floating Button + Label -->
+    <!-- WhatsApp Floating Button -->
     <div class="wa-float-wrapper">
         <div class="wa-label">Tanya Admin</div>
-        <a href="https://wa.me/6285290474524" target="_blank" class="whatsapp-bubble">
+        <a href="https://wa.me/6285290474524" target="_blank" class="whatsapp-bubble" aria-label="WhatsApp">
             <i class="bi bi-whatsapp"></i>
         </a>
     </div>
 
-    <!-- MINI CART POPUP --> 
+    <!-- MINI CART POPUP -->
     @php
         $cartItems = auth()->check()
-            ? \App\Models\CartItem::with('product')
-                ->where('user_id', auth()->id())
-                ->get()
+            ? \App\Models\CartItem::with('product')->where('user_id', auth()->id())->get()
             : collect();
     @endphp
 
@@ -142,7 +155,7 @@
              @click.away="openCart = false">
 
             <div class="d-flex justify-content-between align-items-center mb-3">
-                <h5 class="fw-bold">Keranjang Saya</h5>
+                <h5 class="fw-bold mb-0">Keranjang Saya</h5>
                 <button class="btn-close" @click="openCart = false"></button>
             </div>
 
@@ -156,7 +169,6 @@
                             $harga = $item->product->price;
                             $productTotal = $area * $item->quantity * $harga;
 
-                            // finishing rate
                             $finishingRate = $item->finishing === 'finishing' ? 500 : 0;
                             $finishingTotal = $finishingRate * $area * $item->quantity;
 
@@ -165,16 +177,13 @@
 
                         <li class="list-group-item">
                             <div class="fw-semibold">{{ $item->product->name }}</div>
-
                             <div class="small text-muted">
                                 {{ $item->length }} × {{ $item->width }} m ({{ $area }} m²) × {{ $item->quantity }}
                             </div>
-
                             <div class="small">
                                 Produk: Rp {{ number_format($productTotal, 0, ',', '.') }} <br>
                                 Finishing: Rp {{ number_format($finishingTotal, 0, ',', '.') }}
                             </div>
-
                             <div class="fw-bold text-end">
                                 Total: Rp {{ number_format($total, 0, ',', '.') }}
                             </div>
@@ -192,15 +201,11 @@
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
-    {{-- AKTIFKAN TOOLTIP BOOTSTRAP --}}
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
-            tooltipTriggerList.map(function (el) {
-                return new bootstrap.Tooltip(el);
-            });
+            tooltipTriggerList.map(function (el) { return new bootstrap.Tooltip(el); });
         });
     </script>
-
 </body>
 </html>

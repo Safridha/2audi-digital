@@ -4,199 +4,206 @@
 
 @section('content')
 
-    {{-- STYLE KHUSUS CAROUSEL --}}
-    <style>
-        #carousel-area {
-            position: relative;
-            overflow: hidden;
-            height: 250px;
-            background-color: #e0f2ff;
-            border-radius: 8px;
-        }
+@php
+    use Illuminate\Support\Str;
+@endphp
 
-        #carousel-area .carousel-slide {
-            position: absolute;
-            inset: 0;
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            opacity: 0;
-            transition: opacity 0.8s ease-in-out;
-        }
+<style>
+/* PROMO BESAR – TANPA KOTAK DALAM */
+.promo-wrap{
+    position: relative;
+    width: 100%;
+    height: 320px;              /* ⬅️ BESARIN DI SINI */
+    overflow: hidden;
+}
 
-        #carousel-area .carousel-slide.active {
-            opacity: 1;
-            z-index: 2;
-        }
-    </style>
+.promo-wrap img{
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;        /* banner utuh */
+    opacity: 0;
+    transition: opacity .6s ease;
+}
 
-    <!-- BANNER & KATEGORI PRODUK -->
-    <div class="container mt-4">
-        <div class="row align-items-start g-4">
+.promo-wrap img.active{
+    opacity: 1;
+}
 
-            <!-- Carousel Promo + Tentang 2 Audi -->
-            <div class="col-md-5">
-                <div class="p-4 rounded shadow-sm h-100 bg-blue-100">
-                    <h5 class="fw-bold text-center mb-4 text-blue-900">TENTANG 2 AUDI - PROMO</h5>
+@media (max-width: 992px){
+    .promo-wrap{ height: 260px; }
+}
 
-                    <!-- Carousel Area -->
-                    <div id="carousel-area" class="position-relative rounded">
-                        <img src="{{ asset('images/carousel/hero-1.png') }}"
-                             class="carousel-slide active"
-                             alt="Promo 1">
+@media (max-width: 576px){
+    .promo-wrap{ height: 220px; }
+}
+</style>
 
-                        <img src="{{ asset('images/carousel/hero-2.png') }}"
-                             class="carousel-slide"
-                             alt="Promo 2">
-                    </div>
+{{-- HERO + PROMO (digabung agar kategori lebih luas) --}}
+<section class="container mt-4">
+    <div class="card-soft p-4 p-md-5 section-surface">
+        <div class="row align-items-center g-4">
 
-                    <!-- Script geser otomatis dengan fade -->
-                    <script>
-                        document.addEventListener('DOMContentLoaded', function () {
-                            const slides = document.querySelectorAll('#carousel-area .carousel-slide');
-                            if (!slides.length) return;
+            {{-- HERO KIRI --}}
+            <div class="col-lg-7">
+                <h1 class="fw-bold" style="font-size: clamp(22px, 3vw, 36px); line-height: 1.15;">
+                    Cetak Banner, Spanduk & Kebutuhan Promosi
+                </h1>
+                <p class="text-muted mt-2 mb-4" style="font-size: 15px;">
+                    Full color • Bisa custom ukuran • Produksi cepat • Hasil tajam dan rapi.
+                </p>
 
-                            let index = 0;
+                <div class="d-flex flex-wrap gap-2">
+                    <a href="#kategori-produk" class="btn-brand text-decoration-none">
+                        Lihat Kategori
+                    </a>
+                </div>
 
-                            setInterval(() => {
-                                // hapus active dari slide sekarang
-                                slides[index].classList.remove('active');
-                                // pindah ke slide berikutnya (looping)
-                                index = (index + 1) % slides.length;
-                                // kasih active ke slide baru
-                                slides[index].classList.add('active');
-                            }, 4000); // ganti slide tiap 4 detik
-                        });
-                    </script>
+                <div class="d-flex flex-wrap gap-2 mt-4">
+                    <span class="badge rounded-pill text-bg-light border">Mulai Rp 16.000/m*</span>
+                    <span class="badge rounded-pill text-bg-light border">One Day Service*</span>
+                    <span class="badge rounded-pill text-bg-light border">Kirim Seluruh Indonesia</span>
                 </div>
             </div>
 
-            <!-- Kategori Produk -->
-            <div class="col-md-7" id="kategori-produk">
-                <div class="p-4 rounded shadow-sm h-100 bg-blue-100">
-                    <h5 class="fw-bold mb-4 text-center text-blue-900">KATEGORI PRODUK</h5>
-
-                    @php use Illuminate\Support\Str; @endphp
-
-                    <div class="d-flex flex-wrap justify-content-center gap-4">
-                        @forelse ($categories as $category)
-                            <a href="{{ route('catalog.products', $category->id) }}"
-                               class="text-decoration-none text-reset">
-                                <div class="text-center p-3 rounded bg-blue-50 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300"
-                                     style="width: 180px;">
-
-                                     {{-- Gambar kategori --}}
-                                        @if($category->image)
-                                            <img
-                                                src="{{ asset('storage/' . $category->image) }}"
-                                                alt="{{ $category->name }}"
-                                                class="img-fluid rounded shadow-sm mb-2"
-                                                style="height:120px; width:100%; object-fit:cover;"
-                                            >
-                                        @else
-                                            <div class="bg-blue-200 d-flex align-items-center justify-content-center text-blue-800 rounded mb-2"
-                                                style="height:120px; width:100%;">
-                                                No Image
-                                            </div>
-                                        @endif
-
-
-                                        {{-- Nama --}}
-                                        <p class="fw-bold mb-2 text-blue-900 text-center" style="font-size: 15px;">
-                                            {{ $category->name }}
-                                        </p>
-
-                                        {{-- Deskripsi jadi poin (rapi & informatif) --}}
-                                        @php
-                                            $desc = trim($category->description ?? '');
-                                            $lines = $desc !== '' ? preg_split("/\r\n|\n|\r/", $desc) : [];
-                                        @endphp
-
-                                        @if($desc !== '')
-                                            <ul class="text-blue-800 small mb-2 ps-3 text-start"
-                                                style="list-style: disc; line-height: 1.6;">
-                                                @foreach(array_slice($lines, 0, 3) as $line)
-                                                    @php $line = trim($line); @endphp
-                                                    @if($line !== '')
-                                                        <li>{{ ltrim($line, "-• \t") }}</li>
-                                                    @endif
-                                                @endforeach
-                                            </ul>
-                                        @endif
-
-
-                                    {{-- Hint klik --}}
-                                    <p class="text-blue-700 small mb-0">
-                                        Klik untuk lihat produk {{ strtolower($category->name) }}.
-                                    </p>
-                                </div>
-                            </a>
-                        @empty
-                            <p class="text-blue-800">Belum ada kategori tersedia.</p>
-                        @endforelse
+            {{-- PROMO KANAN (sidebar) --}}
+            <div class="col-lg-5">
+                    <div class="promo-wrap mb-3" id="promoSlider">
+                        <img src="{{ asset('images/carousel/hero-1.jpg') }}" class="active" alt="Promo 1">
+                        <img src="{{ asset('images/carousel/hero-2.jpg') }}" alt="Promo 2">
+                        <img src="{{ asset('images/carousel/hero-3.jpg') }}" alt="Promo 3">
                     </div>
                 </div>
             </div>
 
         </div>
     </div>
+</section>
 
-    <!-- LAYANAN -->
-    <section class="container mt-5 text-center border-top pt-4">
-        <h4 class="fw-bold mb-4 text-blue-900">LAYANAN</h4>
-        <div class="row justify-content-center g-4">
-            @php
-                $services = [
-                    ['img'=>'kualitas.png','title'=>'Cetak dengan Kualitas Terbaik','desc'=>'Hasil cetak berkualitas dengan teknologi modern.'],
-                    ['img'=>'service.png','title'=>'One Day Service','desc'=>'Pesanan bisa selesai dalam hitungan jam.'],
-                    ['img'=>'pelayanan.png','title'=>'Pelayanan Terbaik','desc'=>'Tim kami profesional dan ramah.'],
-                    ['img'=>'terjangkau.png','title'=>'Harga Terjangkau','desc'=>'Kualitas premium harga ramah di kantong.'],
-                    ['img'=>'pengiriman.png','title'=>'Dikirim ke Seluruh Indonesia','desc'=>'Pesanan siap antar ke seluruh pelosok Indonesia.'],
-                ];
-            @endphp
+{{-- Script promo slider (tetap) --}}
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const slides = document.querySelectorAll('#promoSlider img');
+    if (!slides.length) return;
+    let idx = 0;
+    setInterval(() => {
+        slides[idx].classList.remove('active');
+        idx = (idx + 1) % slides.length;
+        slides[idx].classList.add('active');
+    }, 3500);
+});
+</script>
 
+{{-- KATEGORI (dibuat FULL WIDTH agar lebih luas) --}}
+<section class="container mt-4" id="kategori-produk">
+    <div class="card-soft p-4 section-surface">
+        <h5 class="fw-bold text-center mb-4">KATEGORI PRODUK</h5>
+
+        <div class="row g-3">
+            @forelse ($categories as $category)
+                <div class="col-12 col-sm-6 col-lg-3">
+                    <a href="{{ route('catalog.products', $category->id) }}" class="text-decoration-none text-reset">
+                        <div class="card-soft p-3 h-100 hover:shadow-lg transition-all duration-300">
+
+                            @if($category->image)
+                                <img src="{{ asset('storage/' . $category->image) }}"
+                                     alt="{{ $category->name }}"
+                                     class="img-fluid rounded mb-2"
+                                     style="height:150px; width:100%; object-fit:cover;">
+                            @else
+                                <div class="bg-light d-flex align-items-center justify-content-center rounded mb-2"
+                                     style="height:150px;">
+                                    <span class="text-muted small">No Image</span>
+                                </div>
+                            @endif
+
+                            <div class="d-flex align-items-center justify-content-between">
+                                <p class="fw-bold mb-0" style="font-size: 15px;">{{ $category->name }}</p>
+                                <i class="bi bi-arrow-right-short text-primary fs-5"></i>
+                            </div>
+
+                            {{-- DESKRIPSI KATEGORI (BARU) --}}
+                            @php $desc = trim($category->description ?? ''); @endphp
+                            @if($desc !== '')
+                                <p class="text-muted small mt-2 mb-1">
+                                    {{ Str::limit(strip_tags($desc), 85) }}
+                                </p>
+                            @endif
+
+                            <p class="text-primary small mb-0">
+                                Klik untuk lihat produk {{ strtolower($category->name) }}.
+                            </p>
+                        </div>
+                    </a>
+                </div>
+            @empty
+                <p class="text-muted text-center">Belum ada kategori tersedia.</p>
+            @endforelse
+        </div>
+    </div>
+</section>
+
+{{-- LAYANAN --}}
+<section class="container mt-4">
+    <div class="card-soft p-4 section-surface text-center">
+        <h4 class="fw-bold mb-4">LAYANAN</h4>
+
+        @php
+            $services = [
+                ['img'=>'kualitas.png','title'=>'Kualitas Terbaik','desc'=>'Hasil cetak tajam dengan teknologi modern.'],
+                ['img'=>'service.png','title'=>'One Day Service','desc'=>'Pesanan bisa selesai lebih cepat.'],
+                ['img'=>'pelayanan.png','title'=>'Pelayanan Ramah','desc'=>'Kami siap bantu melayani.'],
+                ['img'=>'terjangkau.png','title'=>'Harga Terjangkau','desc'=>'Kualitas oke, harga bersahabat.'],
+                ['img'=>'pengiriman.png','title'=>'Kirim Indonesia','desc'=>'Pengiriman ke berbagai daerah.'],
+            ];
+        @endphp
+
+        <div class="row g-3 justify-content-center">
             @foreach($services as $service)
                 <div class="col-6 col-sm-4 col-md-2">
-                    <div class="p-3 rounded shadow-md bg-blue-50 hover:shadow-lg hover:-translate-y-1 transition-all duration-300">
-                        <div class="icon-circle mb-3">
-                            <img src="{{ asset('images/'.$service['img']) }}" alt="{{ $service['title'] }}"
-                                 class="img-fluid mx-auto" style="width: 60px; height: 60px; object-fit: contain;">
+                    <div class="p-3 rounded-3 border bg-white h-100 hover:shadow-lg transition-all duration-300">
+                        <img src="{{ asset('images/'.$service['img']) }}" alt="{{ $service['title'] }}"
+                             class="img-fluid mx-auto mb-2" style="width: 56px; height: 56px; object-fit: contain;">
+                        <h6 class="fw-bold mb-1">{{ $service['title'] }}</h6>
+                        <p class="text-muted small mb-0">{{ $service['desc'] }}</p>
+                    </div>
+                </div>
+            @endforeach
+        </div>
+    </div>
+</section>
+
+{{-- LANGKAH ORDER --}}
+<section class="container mt-4 mb-2 pb-1">
+    <div class="card-soft p-4 section-surface text-center">
+        <h4 class="fw-bold mb-4">LANGKAH ORDER</h4>
+
+        @php
+            $steps = [
+                'Pilih kategori produk.',
+                'Pilih produk sesuai kebutuhan.',
+                'Atur ukuran/bahan/spesifikasi.',
+                'Upload desain.',
+                'Checkout pesanan.',
+                'Bayar & pesanan diproses.',
+            ];
+        @endphp
+
+        <div class="row g-3 justify-content-center">
+            @foreach($steps as $i => $step)
+                <div class="col-6 col-md-2">
+                    <div class="p-3 rounded-3 border bg-white h-100">
+                        <div class="mx-auto d-flex align-items-center justify-content-center rounded-circle text-white fw-bold"
+                             style="width:44px;height:44px;background:#4f46e5;">
+                            {{ $i+1 }}
                         </div>
-                        <h6 class="fw-bold text-blue-900">{{ $service['title'] }}</h6>
-                        <p class="text-blue-800 small mb-0">{{ $service['desc'] }}</p>
+                        <p class="small text-muted mt-2 mb-0">{{ $step }}</p>
                     </div>
                 </div>
             @endforeach
         </div>
-    </section>
-
-    <!-- LANGKAH ORDER -->
-    <section class="container text-center mt-5 mb-5 pb-5 border-top pt-4">
-        <h4 class="fw-bold mb-5 text-blue-900">LANGKAH ORDER</h4>
-        <div class="d-flex flex-column flex-md-row justify-content-center align-items-center gap-4">
-            @php
-                $steps = [
-                    'Pilih Kategori – Tentukan kategori produk.',
-                    'Pilih Produk – Klik produk sesuai kebutuhanmu.',
-                    'Atur Spesifikasi – Sesuaikan ukuran, bahan, dan detail lainnya.',
-                    'Upload Desain – Unggah file gambar/desain.',
-                    'Checkout – Periksa pesanan lalu lakukan checkout.',
-                    'Bayar Pesanan – Pilih metode pembayaran dan selesaikan.',
-                ];
-            @endphp
-
-            @foreach($steps as $index => $step)
-                <div class="d-flex flex-column align-items-center flex-fill">
-                    <div class="d-flex align-items-center justify-content-center rounded-circle bg-blue-800 text-white fw-bold shadow-lg"
-                         style="width: 48px; height: 48px; font-size: 18px;">
-                        {{ $index + 1 }}
-                    </div>
-                    <p class="text-blue-800 text-sm mt-3 mb-0" style="max-width: 180px;">
-                        {{ $step }}
-                    </p>
-                </div>
-            @endforeach
-        </div>
-    </section>
+    </div>
+</section>
 
 @endsection

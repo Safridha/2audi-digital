@@ -3,8 +3,12 @@
 @section('title', 'Keranjang')
 
 @section('content')
-<div class="container mt-5 mb-5">
-    <h3 class="fw-bold mb-4 text-blue-900">Keranjang Saya</h3>
+<div class="container mt-3 mb-5">
+
+    {{-- ✅ judul disamakan seperti halaman katalog --}}
+    <h4 class="fw-bold black text-center mb-3" style="font-size: 22px;">
+        Keranjang Saya
+    </h4>
 
     @if(session('success'))
         <div class="alert alert-success">{{ session('success') }}</div>

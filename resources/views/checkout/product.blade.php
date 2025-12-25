@@ -4,7 +4,7 @@
 
 @section('content')
 <div class="container mt-1 mb-5">
-    <h4 class="fw-bold text-blue-900 text-center mb-3" style="font-size: 22px;">
+    <h4 class="fw-bold text-black text-center mb-3" style="font-size: 22px;">
         Detail Cetakan Produk
     </h4>
 
@@ -93,15 +93,19 @@
                     </div>
 
                     <div class="mb-3">
-                        <label class="form-label">Upload Desain</label>
+                        <label class="form-label">Upload Desain <span class="text-danger">*</span></label>
                         <input type="file"
                                name="design_file"
                                id="design_file"
-                               class="form-control"
-                               accept=".jpg,.jpeg,.png,.pdf,.ai,.cdr">
+                               class="form-control @error('design_file') is-invalid @enderror"
+                               accept=".jpg,.jpeg,.png,.pdf,.ai,.cdr"
+                               required>
                         <div class="form-text">
                             Format: JPG, PNG, PDF, AI, CDR — max 10MB
                         </div>
+                        @error('design_file')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
                     </div>
 
                     {{-- ESTIMASI HARGA (muncul setelah upload gambar) --}}
@@ -147,7 +151,7 @@
 
 <script>
     function hitungEstimasi() {
-        const price         = parseFloat(document.getElementById('unit_price').value || 0);  // harga / m²
+        const price         = parseFloat(document.getElementById('unit_price').value || 0);
         const finishingRate = parseFloat(document.getElementById('finishing_rate').value || 0);
 
         const length    = parseFloat(document.getElementById('length').value || 0);
@@ -162,18 +166,15 @@
         const txtFin    = document.getElementById('est-finishing');
         const txtTotal  = document.getElementById('est-total');
 
-        // Estimasi hanya muncul kalau file desain sudah dipilih
         if (!design || !design.value || !length || !width || !qty) {
             box.style.display = 'none';
             return;
         }
 
-        const areaPerItem   = length * width;        
-        const totalArea     = areaPerItem * qty;     
-        const productCost   = price * totalArea;     
-        const finishingCost = (finishing === 'finishing')
-            ? finishingRate * totalArea
-            : 0;
+        const areaPerItem   = length * width;
+        const totalArea     = areaPerItem * qty;
+        const productCost   = price * totalArea;
+        const finishingCost = (finishing === 'finishing') ? finishingRate * totalArea : 0;
         const total         = productCost + finishingCost;
 
         box.style.display = 'block';
@@ -184,7 +185,6 @@
         txtTotal.innerText = `Total Harga: Rp ${total.toLocaleString('id-ID')}`;
     }
 
-    // set action dulu baru submit
     function submitAsCart() {
         const form = document.getElementById('detail-form');
         const actionField = document.getElementById('action_field');
@@ -208,7 +208,6 @@
     }
 
     document.addEventListener('DOMContentLoaded', function () {
-        // estimasi akan muncul kalau user sudah pilih gambar, lalu mengubah panjang / lebar / qty / finishing
         ['length', 'width', 'quantity', 'finishing', 'design_file'].forEach(function (id) {
             const el = document.getElementById(id);
             if (!el) return;

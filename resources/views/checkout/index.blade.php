@@ -4,7 +4,7 @@
 
 @section('content')
 <div class="container mt-5 mb-5">
-    <h4 class="fw-bold text-blue-900 text-center mb-3" style="font-size: 22px;">
+    <h4 class="fw-bold black text-center mb-3" style="font-size: 22px;">
         Checkout
     </h4>
 

@@ -18,35 +18,37 @@ class CheckoutController extends Controller
     }
 
     public function singleStart(Request $request, Product $product)
-    {
-        $data = $request->validate([
-            'length'      => 'required|numeric|min:0.1',
-            'width'       => 'required|numeric|min:0.1',
-            'quantity'    => 'required|integer|min:1',
-            'finishing'   => 'required|string',
-            'note'        => 'nullable|string',
-            'design_file' => 'nullable|file|max:10240',
-        ]);
+{
+    $data = $request->validate([
+        'length'      => 'required|numeric|min:0.1',
+        'width'       => 'required|numeric|min:0.1',
+        'quantity'    => 'required|integer|min:1',
+        'finishing'   => 'required|string',
+        'note'        => 'nullable|string',
 
-        $designPath = null;
-        if ($request->hasFile('design_file')) {
-            $designPath = $request->file('design_file')->store('designs', 'public');
-        }
+        // ✅ WAJIB UPLOAD + validasi format & ukuran
+        'design_file' => 'required|file|mimes:jpg,jpeg,png,pdf,ai,cdr|max:10240',
+    ]);
 
-        session([
-            'single_checkout' => [
-                'product_id'  => $product->id,
-                'length'      => $data['length'],
-                'width'       => $data['width'],
-                'quantity'    => $data['quantity'],
-                'finishing'   => $data['finishing'],
-                'note'        => $data['note'] ?? null,
-                'design_file' => $designPath,
-            ]
-        ]);
-
-        return redirect()->route('checkout.single');
+    $designPath = null;
+    if ($request->hasFile('design_file')) {
+        $designPath = $request->file('design_file')->store('designs', 'public');
     }
+
+    session([
+        'single_checkout' => [
+            'product_id'  => $product->id,
+            'length'      => $data['length'],
+            'width'       => $data['width'],
+            'quantity'    => $data['quantity'],
+            'finishing'   => $data['finishing'],
+            'note'        => $data['note'] ?? null,
+            'design_file' => $designPath,
+        ]
+    ]);
+
+    return redirect()->route('checkout.single');
+}
 
     public function single()
     {

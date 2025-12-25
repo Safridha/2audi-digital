@@ -3,8 +3,8 @@
 @section('title', 'Edit Item Keranjang')
 
 @section('content')
-<div class="container mt-5 mb-5">
-    <h4 class="fw-bold text-blue-900 text-center mb-3" style="font-size: 22px;">
+<div class="container mt-3 mb-5">
+    <h4 class="fw-bold text-black text-center mb-3" style="font-size: 22px;">
         Edit Item Keranjang
     </h4>
 

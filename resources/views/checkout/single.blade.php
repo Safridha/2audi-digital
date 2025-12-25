@@ -5,7 +5,7 @@
 @section('content')
 <div class="container mt-1 mb-5">
     {{-- ✅ samakan style judul dengan halaman detail produk --}}
-    <h4 class="fw-bold text-blue-900 text-center mb-3 mt-n2" style="font-size: 22px;">
+    <h4 class="fw-bold text-black text-center mb-3 mt-n2" style="font-size: 22px;">
         Checkout 1 Produk
     </h4>
 
@@ -229,9 +229,16 @@
                         </p>
                     </div>
 
-                    <button type="submit" class="btn btn-primary">
-                        Lanjut ke Pembayaran
-                    </button>
+                    {{-- ✅ BUTTON KEMBALI + LANJUT (DITAMBAH, TIDAK MERUSAK KODE) --}}
+                    <div class="d-flex gap-2">
+                        <a href="{{ url()->previous() ?? url('/') }}" class="btn btn-outline-secondary">
+                            <i class="bi bi-arrow-left"></i> Kembali
+                        </a>
+
+                        <button type="submit" class="btn btn-primary px-4">
+                            Lanjut ke Pembayaran
+                        </button>
+                    </div>
                 </form>
 
             </div>

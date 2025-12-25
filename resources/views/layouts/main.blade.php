@@ -13,6 +13,11 @@
     <!-- Bootstrap Icons -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
 
+    <!-- ✅ Tailwind config (matikan preflight biar ga nabrak Bootstrap) -->
+    <script>
+        tailwind.config = { corePlugins: { preflight: false } }
+    </script>
+
     <!-- Tailwind CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
 
@@ -21,20 +26,21 @@
 
     <style>
         :root{
-            --brand: #4f46e5;      /* indigo */
-            --brandDark: #1e3a8a;  /* navy */
+            --brand: #4f46e5;
+            --brandDark: #1e3a8a;
             --surface: #ffffff;
-            --muted: #f5f7fb;      /* abu muda */
+            --muted: #f5f7fb;
             --text: #0f172a;
         }
 
         body { background: var(--muted); color: var(--text); }
 
-        /* Section rhythm (biar ga kebanyakan biru) */
+        /* ✅ cegah layout mobile melebar (horizontal overflow) */
+        html, body { max-width: 100%; overflow-x: hidden; }
+
         .section-surface { background: var(--surface); }
         .section-muted   { background: var(--muted); }
 
-        /* Card look */
         .card-soft{
             background: #fff;
             border: 1px solid rgba(15, 23, 42, .06);
@@ -42,7 +48,6 @@
             box-shadow: 0 6px 18px rgba(15, 23, 42, .06);
         }
 
-        /* Buttons */
         .btn-brand{
             background: var(--brand);
             color: #fff;
@@ -52,6 +57,7 @@
             font-weight: 700;
         }
         .btn-brand:hover{ filter: brightness(.95); color:#fff; }
+
         .btn-ghost{
             background: #fff;
             color: var(--brand);
@@ -61,7 +67,6 @@
             font-weight: 700;
         }
 
-        /* WhatsApp floating */
         .wa-float-wrapper {
             position: fixed;
             right: 18px;
@@ -96,13 +101,11 @@
         .whatsapp-bubble:hover { transform: scale(1.06); }
         .whatsapp-bubble i { color: white; font-size: 28px; }
 
-        /* Hide label on small screens (biar ga nutup konten) */
         @media (max-width: 576px){
             .wa-label{ display:none; }
             .wa-float-wrapper{ right: 14px; bottom: 14px; }
         }
 
-        /* Tooltip bootstrap */
         .tooltip-inner {
             background-color: var(--brandDark);
             color: #ffffff;

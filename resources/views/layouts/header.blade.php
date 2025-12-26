@@ -1,15 +1,31 @@
 <header class="shadow-sm" style="background:#4f46e5">
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 py-3">
-    <div class="flex items-center gap-3">
+  @php
+    $cartItemCount = auth()->check()
+      ? \App\Models\CartItem::where('user_id', auth()->id())->count()
+      : 0;
+  @endphp
+
+  <div class="max-w-7xl mx-auto px-3 sm:px-6 py-3" x-data="{ mobileMenu:false }">
+
+    {{-- TOP BAR --}}
+    <div class="flex items-center gap-2 sm:gap-4">
+
+      {{-- MOBILE: HAMBURGER --}}
+      <button type="button"
+              class="sm:hidden text-white text-2xl shrink-0"
+              @click="mobileMenu = !mobileMenu"
+              aria-label="Menu">
+        <i class="bi" :class="mobileMenu ? 'bi-x-lg' : 'bi-list'"></i>
+      </button>
 
       {{-- LOGO --}}
       <a href="{{ url('/') }}" class="shrink-0">
-        <img src="{{ asset('images/logo.png') }}" alt="2 Audi Digital" class="h-14 sm:h-16">
+        <img src="{{ asset('images/logo.png') }}" alt="2 Audi Digital" class="h-10 sm:h-16">
       </a>
 
-      {{-- SEARCH --}}
-      <div class="flex-1 flex justify-center">
-        <form action="{{ route('catalog.search') }}" method="GET" class="relative w-full max-w-2xl">
+      {{-- SEARCH (desktop & mobile tetap ada, tapi fleksibel) --}}
+      <div class="flex-1 min-w-0">
+        <form action="{{ route('catalog.search') }}" method="GET" class="relative w-full max-w-2xl sm:max-w-none sm:mx-auto">
           <input name="q" value="{{ request('q') }}" placeholder="Mau cari apa?"
                  class="w-full h-10 sm:h-11 rounded-full bg-white pl-4 pr-11 text-gray-800 placeholder-gray-400 border-0 focus:outline-none">
           <button class="absolute right-3 top-1/2 -translate-y-1/2 bg-transparent border-0 p-0" type="submit">
@@ -18,30 +34,26 @@
         </form>
       </div>
 
-      {{-- RIGHT MENU --}}
-      @php
-        $cartItemCount = auth()->check()
-          ? \App\Models\CartItem::where('user_id', auth()->id())->count()
-          : 0;
-      @endphp
-
-      <div class="flex items-center gap-5 sm:gap-7 text-white font-bold">
+      {{-- RIGHT ICONS (desktop full, mobile minimal) --}}
+      <div class="flex items-center gap-3 sm:gap-7 text-white font-bold shrink-0">
 
         {{-- CART --}}
         <div class="relative">
           <button type="button"
                   x-init="$el._tt = new bootstrap.Tooltip($el)"
                   @click="openCart = true; $el._tt?.hide()"
-                  class="text-white text-2xl"
+                  class="text-white text-xl sm:text-2xl"
                   data-bs-placement="bottom" title="Keranjang">
             <i class="bi bi-cart3"></i>
           </button>
           @if($cartItemCount > 0)
-            <span class="absolute -top-1 -right-2 bg-red-600 text-white text-xs rounded-full px-2">{{ $cartItemCount }}</span>
+            <span class="absolute -top-1 -right-2 bg-red-600 text-white text-[10px] sm:text-xs rounded-full px-1.5 sm:px-2">
+              {{ $cartItemCount }}
+            </span>
           @endif
         </div>
 
-        {{-- RIWAYAT --}}
+        {{-- RIWAYAT (desktop tampil, mobile masuk hamburger) --}}
         <div class="hidden sm:block">
           <a href="{{ auth()->check() ? route('orders.history') : route('login') }}"
              x-init="$el._tt = new bootstrap.Tooltip($el)"
@@ -52,12 +64,12 @@
           </a>
         </div>
 
-        {{-- AKUN --}}
+        {{-- AKUN (tetap tampil) --}}
         <div class="relative" x-data="{ open:false }">
           <button type="button"
                   x-init="$el._tt = new bootstrap.Tooltip($el)"
                   @click="open = !open; $el._tt?.hide()"
-                  class="text-white text-3xl sm:text-4xl"
+                  class="text-white text-2xl sm:text-4xl"
                   data-bs-placement="bottom" title="Akun">
             <i class="bi bi-person-circle"></i>
           </button>
@@ -88,6 +100,57 @@
 
       </div>
     </div>
+
+    {{-- MOBILE MENU (hamburger dropdown) --}}
+    <div x-show="mobileMenu" x-transition
+         class="sm:hidden mt-3 bg-white/10 rounded-xl p-3"
+         @click.away="mobileMenu=false">
+
+      <div class="grid gap-2 text-white">
+
+        <a href="{{ auth()->check() ? route('orders.history') : route('login') }}"
+           class="flex items-center gap-2 py-2 px-2 rounded-lg hover:bg-white/10">
+          <i class="bi bi-clock-history text-lg"></i>
+          <span>Riwayat Pesanan</span>
+        </a>
+
+        <a href="{{ route('cart.index') }}"
+           class="flex items-center gap-2 py-2 px-2 rounded-lg hover:bg-white/10">
+          <i class="bi bi-bag-check text-lg"></i>
+          <span>Lihat Keranjang</span>
+        </a>
+
+        @auth
+          <a href="{{ route('profile.edit') }}"
+             class="flex items-center gap-2 py-2 px-2 rounded-lg hover:bg-white/10">
+            <i class="bi bi-person-gear text-lg"></i>
+            <span>Kelola Profil</span>
+          </a>
+
+          <form method="POST" action="{{ route('logout') }}">
+            @csrf
+            <button type="submit"
+                    class="w-full text-left flex items-center gap-2 py-2 px-2 rounded-lg hover:bg-white/10">
+              <i class="bi bi-box-arrow-right text-lg"></i>
+              <span>Logout</span>
+            </button>
+          </form>
+        @else
+          <a href="{{ route('login') }}"
+             class="flex items-center gap-2 py-2 px-2 rounded-lg hover:bg-white/10">
+            <i class="bi bi-box-arrow-in-right text-lg"></i>
+            <span>Login</span>
+          </a>
+          <a href="{{ route('register') }}"
+             class="flex items-center gap-2 py-2 px-2 rounded-lg hover:bg-white/10">
+            <i class="bi bi-person-plus text-lg"></i>
+            <span>Register</span>
+          </a>
+        @endauth
+
+      </div>
+    </div>
+
   </div>
 </header>
 
@@ -98,3 +161,4 @@
   .tooltip.bs-tooltip-start .tooltip-arrow::before{border-left-color:#fff!important}
   .tooltip.bs-tooltip-end .tooltip-arrow::before{border-right-color:#fff!important}
 </style>
+

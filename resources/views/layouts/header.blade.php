@@ -10,22 +10,15 @@
     {{-- TOP BAR --}}
     <div class="flex items-center gap-2 sm:gap-4">
 
-      {{-- MOBILE: HAMBURGER --}}
-      <button type="button"
-              class="sm:hidden text-white text-2xl shrink-0"
-              @click="mobileMenu = !mobileMenu"
-              aria-label="Menu">
-        <i class="bi" :class="mobileMenu ? 'bi-x-lg' : 'bi-list'"></i>
-      </button>
-
       {{-- LOGO --}}
       <a href="{{ url('/') }}" class="shrink-0">
         <img src="{{ asset('images/logo.png') }}" alt="2 Audi Digital" class="h-10 sm:h-16">
       </a>
 
-      {{-- SEARCH (desktop & mobile tetap ada, tapi fleksibel) --}}
+      {{-- SEARCH --}}
       <div class="flex-1 min-w-0">
-        <form action="{{ route('catalog.search') }}" method="GET" class="relative w-full max-w-2xl sm:max-w-none sm:mx-auto">
+        <form action="{{ route('catalog.search') }}" method="GET"
+              class="relative w-full max-w-2xl sm:max-w-none sm:mx-auto">
           <input name="q" value="{{ request('q') }}" placeholder="Mau cari apa?"
                  class="w-full h-10 sm:h-11 rounded-full bg-white pl-4 pr-11 text-gray-800 placeholder-gray-400 border-0 focus:outline-none">
           <button class="absolute right-3 top-1/2 -translate-y-1/2 bg-transparent border-0 p-0" type="submit">
@@ -34,42 +27,40 @@
         </form>
       </div>
 
-      {{-- RIGHT ICONS (desktop full, mobile minimal) --}}
-      <div class="flex items-center gap-3 sm:gap-7 text-white font-bold shrink-0">
+      {{-- DESKTOP ICONS (HANYA DESKTOP) --}}
+      <div class="hidden sm:flex items-center gap-7 text-white font-bold shrink-0">
 
         {{-- CART --}}
         <div class="relative">
           <button type="button"
                   x-init="$el._tt = new bootstrap.Tooltip($el)"
                   @click="openCart = true; $el._tt?.hide()"
-                  class="text-white text-xl sm:text-2xl"
+                  class="text-white text-2xl"
                   data-bs-placement="bottom" title="Keranjang">
             <i class="bi bi-cart3"></i>
           </button>
           @if($cartItemCount > 0)
-            <span class="absolute -top-1 -right-2 bg-red-600 text-white text-[10px] sm:text-xs rounded-full px-1.5 sm:px-2">
+            <span class="absolute -top-1 -right-2 bg-red-600 text-white text-xs rounded-full px-2">
               {{ $cartItemCount }}
             </span>
           @endif
         </div>
 
-        {{-- RIWAYAT (desktop tampil, mobile masuk hamburger) --}}
-        <div class="hidden sm:block">
-          <a href="{{ auth()->check() ? route('orders.history') : route('login') }}"
-             x-init="$el._tt = new bootstrap.Tooltip($el)"
-             @click="$el._tt?.hide()"
-             class="text-white text-2xl"
-             data-bs-placement="bottom" title="Riwayat Pesanan">
-            <i class="bi bi-clock-history"></i>
-          </a>
-        </div>
+        {{-- RIWAYAT --}}
+        <a href="{{ auth()->check() ? route('orders.history') : route('login') }}"
+           x-init="$el._tt = new bootstrap.Tooltip($el)"
+           @click="$el._tt?.hide()"
+           class="text-white text-2xl"
+           data-bs-placement="bottom" title="Riwayat Pesanan">
+          <i class="bi bi-clock-history"></i>
+        </a>
 
-        {{-- AKUN (tetap tampil) --}}
+        {{-- AKUN --}}
         <div class="relative" x-data="{ open:false }">
           <button type="button"
                   x-init="$el._tt = new bootstrap.Tooltip($el)"
                   @click="open = !open; $el._tt?.hide()"
-                  class="text-white text-2xl sm:text-4xl"
+                  class="text-white text-4xl"
                   data-bs-placement="bottom" title="Akun">
             <i class="bi bi-person-circle"></i>
           </button>
@@ -99,6 +90,15 @@
         </div>
 
       </div>
+
+      {{-- MOBILE: HAMBURGER (DI KANAN) --}}
+      <button type="button"
+              class="sm:hidden text-white text-2xl shrink-0"
+              @click="mobileMenu = !mobileMenu"
+              aria-label="Menu">
+        <i class="bi" :class="mobileMenu ? 'bi-x-lg' : 'bi-list'"></i>
+      </button>
+
     </div>
 
     {{-- MOBILE MENU (hamburger dropdown) --}}
@@ -161,4 +161,3 @@
   .tooltip.bs-tooltip-start .tooltip-arrow::before{border-left-color:#fff!important}
   .tooltip.bs-tooltip-end .tooltip-arrow::before{border-right-color:#fff!important}
 </style>
-

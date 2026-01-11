@@ -3,6 +3,9 @@ import forms from '@tailwindcss/forms';
 
 /** @type {import('tailwindcss').Config} */
 export default {
+    // ⬇️ WAJIB ADA AGAR dark: BERFUNGSI
+    darkMode: 'media', // otomatis mengikuti dark mode OS / browser
+
     content: [
         './vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php',
         './storage/framework/views/*.php',

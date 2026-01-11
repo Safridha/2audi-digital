@@ -16,12 +16,18 @@
             <div class="card shadow-sm border-0 h-100">
                 <div class="card-body">
 
-                    <h5 class="fw-bold mb-2">{{ $product->name }}</h5>
+                <div class="text-center mb-3">
+    <h5 class="fw-bold mb-1">
+        {{ $product->name }}
+    </h5>
 
-                    <p class="mb-1">
-                        Harga satuan:
-                        <strong>Rp {{ number_format($product->price, 0, ',', '.') }} / m²</strong>
-                    </p>
+    <div class="text-muted">
+        Harga satuan:
+        <strong class="text-dark">
+            Rp {{ number_format($product->price, 0, ',', '.') }} / m²
+        </strong>
+    </div>
+</div>
 
                     <hr>
 
@@ -30,9 +36,6 @@
                     <p class="mb-1">
                         Ukuran:
                         <strong>{{ $detail['length'] }} m × {{ $detail['width'] }} m</strong>
-                        <span class="text-muted">
-                            ({{ number_format($area, 2, ',', '.') }} m² per lembar)
-                        </span>
                     </p>
 
                     <p class="mb-1">
@@ -165,7 +168,7 @@
 
                     <hr class="my-4">
 
-                    <h5 class="fw-bold mb-3">Pengiriman & Pembayaran</h5>
+                    <h5 class="fw-bold mb-3">Pengiriman</h5>
 
                     <div class="mb-3">
                         <label class="form-label">Opsi Pengiriman</label>
@@ -196,20 +199,12 @@
                     </div>
 
                     <div class="alert alert-info py-2 small d-none" id="shippingInfo"></div>
-
-                    <div class="mb-3">
-                        <label class="form-label">Metode Pembayaran</label>
-                        <select name="payment_option" class="form-select" required>
-                            <option value="transfer" {{ old('payment_option') === 'transfer' ? 'selected' : '' }}>Transfer Bank</option>
-                            <option value="tunai" {{ old('payment_option') === 'tunai' ? 'selected' : '' }}>Bayar di Toko</option>
-                        </select>
-                    </div>
-
+                    
                     <input type="hidden" name="shipping_etd" id="shipping_etd" value="{{ old('shipping_etd','') }}">
                     <input type="hidden" name="shipping_cost" id="shipping_cost" value="{{ old('shipping_cost',0) }}">
 
                     <hr class="my-4">
-
+                    <input type="hidden" name="payment_option" value="transfer">
                     <div class="mb-3">
                         <h5 class="fw-bold">Ringkasan Pembayaran</h5>
 

@@ -54,12 +54,7 @@
                     Full color • Bisa custom ukuran • Produksi cepat • Hasil tajam dan rapi.
                 </p>
 
-                <div class="d-flex flex-wrap gap-2">
-                    <a href="#kategori-produk" class="btn-brand text-decoration-none">
-                        Lihat Kategori
-                    </a>
-                </div>
-
+               
                 <div class="d-flex flex-wrap gap-2 mt-4">
                     <span class="badge rounded-pill text-bg-light border">Mulai Rp 16.000/m*</span>
                     <span class="badge rounded-pill text-bg-light border">One Day Service*</span>

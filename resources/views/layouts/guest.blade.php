@@ -15,19 +15,37 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 
-<body class="font-sans text-gray-900 antialiased bg-white min-h-screen flex flex-col justify-center items-center">
-    
+<body
+    class="
+        font-sans antialiased min-h-screen
+        flex flex-col justify-center items-center
+        bg-gray-100 dark:bg-gray-900
+        text-gray-900 dark:text-gray-100
+    "
+>
     <!-- Logo -->
     <div class="mb-4">
         <a href="/" class="focus:outline-none focus:ring-0">
-            <img src="{{ asset('images/logo.png') }}" alt="2 Audi Digital" class="w-28 h-auto rounded shadow-md">
+            <img
+                src="{{ asset('images/logo.png') }}"
+                alt="2 Audi Digital"
+                class="w-28 h-auto rounded shadow-md"
+            >
         </a>
     </div>
 
     <!-- Card -->
-    <div class="w-full sm:max-w-md bg-blue-200 shadow-2xl rounded-xl p-6">
-        <h2 class="text-center text-2xl font-bold text-blue-900 mb-4">Login</h2>
+    <div
+        class="
+            w-full sm:max-w-md
+            bg-blue-200 dark:bg-gray-800
+            shadow-2xl
+            rounded-xl
+            p-6
+        "
+    >
         {{ $slot }}
     </div>
+
 </body>
 </html>

@@ -1,4 +1,11 @@
 <x-guest-layout>
+
+    <!-- JUDUL -->
+    <h2 class="text-center text-2xl font-bold mb-4
+               text-blue-900 dark:text-gray-100">
+        Login
+    </h2>
+
     <!-- Session Status -->
     <x-auth-session-status class="mb-4" :status="session('status')" />
 
@@ -19,12 +26,10 @@
         <!-- Password -->
         <div class="mt-4">
             <x-input-label for="password" :value="__('Password')" />
-
             <x-text-input id="password" class="block mt-1 w-full"
                 type="password"
                 name="password"
                 required autocomplete="current-password" />
-
             <x-input-error :messages="$errors->get('password')" class="mt-2" />
         </div>
 

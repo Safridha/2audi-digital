@@ -168,17 +168,8 @@
                     <input type="hidden" name="shipping_etd" id="shipping_etd" value="{{ old('shipping_etd','') }}">
 
                     <hr class="my-4">
-
-                    <h5 class="fw-bold mb-3">Pembayaran</h5>
-
-                    <div class="mb-4">
-                        <label class="form-label">Opsi Pembayaran</label>
-                        <select name="payment_option" class="form-select" required>
-                            <option value="transfer" {{ old('payment_option')==='transfer'?'selected':'' }}>Transfer / Payment Gateway</option>
-                            <option value="tunai" {{ old('payment_option')==='tunai'?'selected':'' }}>Bayar di Toko</option>
-                        </select>
-                    </div>
-
+                    <input type="hidden" name="payment_option" value="transfer">
+                    
                     <div class="d-flex justify-content-between align-items-center">
                         <a href="{{ route('cart.index') }}" class="btn btn-outline-secondary">
                             &laquo; Kembali ke Keranjang

@@ -11,7 +11,7 @@
     <div class="flex items-center gap-2 sm:gap-4">
 
       {{-- LOGO --}}
-      <a href="{{ url('/') }}" class="shrink-0">
+      <a href="{{ route('home') }}" class="shrink-0">
         <img src="{{ asset('images/logo.png') }}" alt="2 Audi Digital" class="h-10 sm:h-16">
       </a>
 
@@ -27,18 +27,27 @@
         </form>
       </div>
 
-      {{-- DESKTOP ICONS (HANYA DESKTOP) --}}
+      {{-- DESKTOP ICONS --}}
       <div class="hidden sm:flex items-center gap-7 text-white font-bold shrink-0">
+
+        {{-- ✅ HOME --}}
+        <a href="{{ route('home') }}"
+           x-init="$el._tt = new bootstrap.Tooltip($el)"
+           @click="$el._tt?.hide()"
+           class="text-white text-2xl"
+           data-bs-placement="bottom" title="Home">
+          <i class="bi bi-house-door"></i>
+        </a>
 
         {{-- CART --}}
         <div class="relative">
-          <button type="button"
-                  x-init="$el._tt = new bootstrap.Tooltip($el)"
-                  @click="openCart = true; $el._tt?.hide()"
-                  class="text-white text-2xl"
-                  data-bs-placement="bottom" title="Keranjang">
+          <a href="{{ route('cart.index') }}"
+             x-init="$el._tt = new bootstrap.Tooltip($el)"
+             @click="$el._tt?.hide()"
+             class="text-white text-2xl"
+             data-bs-placement="bottom" title="Keranjang">
             <i class="bi bi-cart3"></i>
-          </button>
+          </a>
           @if($cartItemCount > 0)
             <span class="absolute -top-1 -right-2 bg-red-600 text-white text-xs rounded-full px-2">
               {{ $cartItemCount }}
@@ -91,33 +100,39 @@
 
       </div>
 
-      {{-- MOBILE: HAMBURGER (DI KANAN) --}}
+      {{-- MOBILE HAMBURGER --}}
       <button type="button"
               class="sm:hidden text-white text-2xl shrink-0"
               @click="mobileMenu = !mobileMenu"
               aria-label="Menu">
         <i class="bi" :class="mobileMenu ? 'bi-x-lg' : 'bi-list'"></i>
       </button>
-
     </div>
 
-    {{-- MOBILE MENU (hamburger dropdown) --}}
+    {{-- MOBILE MENU --}}
     <div x-show="mobileMenu" x-transition
          class="sm:hidden mt-3 bg-white/10 rounded-xl p-3"
          @click.away="mobileMenu=false">
 
       <div class="grid gap-2 text-white">
 
-        <a href="{{ auth()->check() ? route('orders.history') : route('login') }}"
+        {{-- ✅ HOME --}}
+        <a href="{{ route('home') }}"
            class="flex items-center gap-2 py-2 px-2 rounded-lg hover:bg-white/10">
-          <i class="bi bi-clock-history text-lg"></i>
-          <span>Riwayat Pesanan</span>
+          <i class="bi bi-house-door text-lg"></i>
+          <span>Home</span>
         </a>
 
         <a href="{{ route('cart.index') }}"
            class="flex items-center gap-2 py-2 px-2 rounded-lg hover:bg-white/10">
-          <i class="bi bi-bag-check text-lg"></i>
-          <span>Lihat Keranjang</span>
+          <i class="bi bi-cart3 text-lg"></i>
+          <span>Keranjang</span>
+        </a>
+
+        <a href="{{ auth()->check() ? route('orders.history') : route('login') }}"
+           class="flex items-center gap-2 py-2 px-2 rounded-lg hover:bg-white/10">
+          <i class="bi bi-clock-history text-lg"></i>
+          <span>Riwayat Pesanan</span>
         </a>
 
         @auth
@@ -155,9 +170,18 @@
 </header>
 
 <style>
-  .tooltip-inner{background:#fff!important;color:#111827!important;font-weight:600;font-size:12px;padding:6px 10px;border-radius:10px;box-shadow:0 10px 25px rgba(0,0,0,.15);border:1px solid rgba(17,24,39,.08)}
-  .tooltip.bs-tooltip-top .tooltip-arrow::before{border-top-color:#fff!important}
-  .tooltip.bs-tooltip-bottom .tooltip-arrow::before{border-bottom-color:#fff!important}
-  .tooltip.bs-tooltip-start .tooltip-arrow::before{border-left-color:#fff!important}
-  .tooltip.bs-tooltip-end .tooltip-arrow::before{border-right-color:#fff!important}
+.tooltip-inner{
+  background:#fff!important;
+  color:#111827!important;
+  font-weight:600;
+  font-size:12px;
+  padding:6px 10px;
+  border-radius:10px;
+  box-shadow:0 10px 25px rgba(0,0,0,.15);
+  border:1px solid rgba(17,24,39,.08)
+}
+.tooltip.bs-tooltip-top .tooltip-arrow::before{border-top-color:#fff!important}
+.tooltip.bs-tooltip-bottom .tooltip-arrow::before{border-bottom-color:#fff!important}
+.tooltip.bs-tooltip-start .tooltip-arrow::before{border-left-color:#fff!important}
+.tooltip.bs-tooltip-end .tooltip-arrow::before{border-right-color:#fff!important}
 </style>

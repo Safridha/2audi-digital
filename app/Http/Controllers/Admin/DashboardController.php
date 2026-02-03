@@ -11,10 +11,26 @@ class DashboardController extends Controller
 {
     public function index()
     {
-        // TOP 5 BAHAN PALING BANYAK DIPAKAI
-        $topBahan = Bahan::withSum('usages as total_usage', 'qty')
+        /*
+        |--------------------------------------------------------------------------
+        | FILTER SATUAN
+        |--------------------------------------------------------------------------
+        */
+        $listSatuan = Bahan::select('satuan')
+            ->whereNotNull('satuan')
+            ->distinct()
+            ->pluck('satuan');
+
+        $selectedSatuan = request('satuan', $listSatuan->first());
+
+        /*
+        |--------------------------------------------------------------------------
+        | BAHAN PALING BANYAK DIPAKAI (BAR)
+        |--------------------------------------------------------------------------
+        */
+        $topBahan = Bahan::where('satuan', $selectedSatuan)
+            ->withSum('usages as total_usage', 'qty')
             ->orderByDesc('total_usage')
-            ->take(5)
             ->get();
 
         $chartTopBahan = [
@@ -22,53 +38,77 @@ class DashboardController extends Controller
             'data'   => $topBahan->pluck('total_usage')->map(fn ($v) => (float) $v),
         ];
 
-        //TREN PEMAKAIAN BAHAN PER BULAN (6 BULAN TERAKHIR)
+        /*
+        |--------------------------------------------------------------------------
+        | TREN PEMAKAIAN BAHAN (MULTI-LINE, 1 SATUAN)
+        |--------------------------------------------------------------------------
+        */
         $startDate = Carbon::now()->subMonths(5)->startOfMonth();
-
-        $usageByMonth = BahanUsage::whereDate('tanggal', '>=', $startDate)
-            ->selectRaw('DATE_FORMAT(tanggal, "%Y-%m") as bulan, SUM(qty) as total_qty')
-            ->groupBy('bulan')
-            ->orderBy('bulan')
-            ->get();
-
-        $monthLabels = [];
-        $monthData   = [];
+        $months = [];
 
         for ($i = 0; $i < 6; $i++) {
-            $month   = $startDate->copy()->addMonths($i);
-            $key     = $month->format('Y-m');
-            $label   = $month->translatedFormat('M Y');
-            $row     = $usageByMonth->firstWhere('bulan', $key);
+            $months[] = $startDate->copy()->addMonths($i);
+        }
 
-            $monthLabels[] = $label;
-            $monthData[]   = $row ? (float) $row->total_qty : 0;
+        $labels = collect($months)->map(fn ($m) => $m->translatedFormat('M Y'))->toArray();
+
+        $bahans = Bahan::where('satuan', $selectedSatuan)->get();
+
+        $palette = [
+            '#22c55e', '#8b5cf6', '#3b82f6',
+            '#f97316', '#ef4444', '#14b8a6',
+            '#a855f7', '#0ea5e9'
+        ];
+
+        $datasets = [];
+        $colorIndex = 0;
+
+        foreach ($bahans as $bahan) {
+            $usagePerMonth = BahanUsage::where('bahan_id', $bahan->id)
+                ->whereDate('tanggal', '>=', $startDate)
+                ->selectRaw('DATE_FORMAT(tanggal, "%Y-%m") as bulan, SUM(qty) as total_qty')
+                ->groupBy('bulan')
+                ->pluck('total_qty', 'bulan');
+
+            $data = [];
+            foreach ($months as $m) {
+                $key = $m->format('Y-m');
+                $data[] = (float) ($usagePerMonth[$key] ?? 0);
+            }
+
+            $datasets[] = [
+                'label' => $bahan->nama_bahan,
+                'data' => $data,
+                'borderColor' => $palette[$colorIndex % count($palette)],
+                'backgroundColor' => 'transparent',
+                'tension' => 0.3,
+            ];
+
+            $colorIndex++;
         }
 
         $chartTrenBahan = [
-            'labels' => $monthLabels,
-            'data'   => $monthData,
+            'labels' => $labels,
+            'datasets' => $datasets,
+            'satuan' => $selectedSatuan,
         ];
 
-        // STOCK RISK INDICATOR
-        $bahans = Bahan::withSum('stockBatches as current_stock', 'qty_sisa')->get();
+        /*
+        |--------------------------------------------------------------------------
+        | STOCK RISK INDICATOR
+        |--------------------------------------------------------------------------
+        */
+        $bahansAll = Bahan::withSum('stockBatches as current_stock', 'qty_sisa')->get();
 
-        $riskCount = [
-            'aman'    => 0,
-            'waspada' => 0,
-            'kritis'  => 0,
-        ];
+        $riskCount = ['aman' => 0, 'waspada' => 0, 'kritis' => 0];
 
-        foreach ($bahans as $bahan) {
+        foreach ($bahansAll as $bahan) {
             $stock = (float) ($bahan->current_stock ?? 0);
             $min   = (float) ($bahan->minimal_stock ?? 0);
 
-            // kalau minimal stok tidak di-set, anggap aman
             if ($min <= 0) {
                 $riskCount['aman']++;
-                continue;
-            }
-
-            if ($stock <= 0 || $stock < 0.5 * $min) {
+            } elseif ($stock <= 0 || $stock < 0.5 * $min) {
                 $riskCount['kritis']++;
             } elseif ($stock < $min) {
                 $riskCount['waspada']++;
@@ -79,17 +119,15 @@ class DashboardController extends Controller
 
         $chartRiskStok = [
             'labels' => ['Aman', 'Waspada', 'Kritis'],
-            'data'   => [
-                $riskCount['aman'],
-                $riskCount['waspada'],
-                $riskCount['kritis'],
-            ],
+            'data'   => array_values($riskCount),
         ];
 
         return view('admin.dashboard', compact(
             'chartTopBahan',
             'chartTrenBahan',
-            'chartRiskStok'
+            'chartRiskStok',
+            'listSatuan',
+            'selectedSatuan'
         ));
     }
 }
